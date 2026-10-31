@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aplikasi Daftar Nilai UTS</title>
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem("dnuts_theme")||"light";if(t!=="auto")document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<header class="top"><div class="in">
+  <div class="logo"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5-10-5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/></svg></div>
+  <div><h1>Daftar Nilai UTS</h1><div class="sub" id="hdSub"></div></div>
+  <span class="sp"></span>
+  <span class="hdnote">💾 Data tersimpan otomatis di peramban ini</span>
+  <button id="theme" title="Ganti tema tampilan">🌓 Otomatis</button>
+</div></header>
+<div class="app">
+  <aside class="side">
+    <div class="card">
+      <h2><span class="ic">👥</span>Siswa</h2>
+      <div class="muted" style="margin:-4px 0 8px">Tingkat dan nama kelas untuk lembar yang sedang dibuka dan siswa baru.</div>
+      <div class="row"><select id="tNew" title="Template"><option value="X">Kelas X</option><option value="XI">Kelas XI</option></select><input id="kNew" placeholder="Kelas, mis. X RPL"></div>
+      <div class="clsnote" id="clsNote"></div>
+      <div class="row" style="margin-top:8px"><button class="p" id="add">+ Tambah siswa</button></div>
+      <details><summary>📋 Tempel banyak nama</summary>
+        <textarea id="bulk" rows="5" style="width:100%" placeholder="Satu nama per baris"></textarea>
+        <button id="bulkAdd" style="width:100%">Tambahkan semua</button></details>
+      <details><summary>📥 Impor dari Excel / CSV</summary>
+        <div class="muted">Kolom nama diberi judul "Nama" (judul "Kelas" bersifat opsional). Tanpa judul, kolom teks pertama dipakai sebagai nama. Format: .xlsx atau .csv.</div>
+        <button id="impBtn" style="width:100%">Pilih berkas</button>
+        <input type="file" id="impF" accept=".xlsx,.csv,.txt" hidden>
+        <div class="stat" id="impStat"></div></details>
+      <div class="list" id="list"></div>
+      <button id="clean" style="width:100%;margin-top:8px" hidden>🧹 Hapus semua siswa yang kosong</button>
+      <button id="wipe" class="wipe" style="width:100%;margin-top:8px" hidden>🗑️ Hapus semua siswa</button>
+    </div>
+    <div class="card">
+      <h2><span class="ic">⬇️</span>Unduh</h2>
+      <div class="row" style="margin-bottom:10px"><select id="scope"><option value="all">Semua siswa</option><option value="one">Siswa terpilih saja</option><option value="zip">Satu file per siswa (ZIP)</option></select></div>
+      <div class="dl"><button class="xl" data-ex="xlsx">Excel</button><button class="dc" data-ex="docx">Word</button><button class="pf" data-ex="pdf">PDF</button></div>
+      <div class="stat" id="stat"></div>
+    </div>
+    <div class="card"><h2><span class="ic">💾</span>Cadangan data</h2>
+      <div class="row"><button id="bk">Cadangkan</button><button id="rs">Pulihkan</button></div>
+      <input type="file" id="rsf" accept=".json,application/json" hidden>
+      <div class="stat" id="bkStat"></div></div>
+    <div class="card"><details style="border:0;margin:0"><summary>⚙️ Pengaturan lembar</summary>
+      <label class="f">Semester<input data-s="semester"></label>
+      <label class="f">Tahun pelajaran (TP)<input data-s="tp"></label>
+      <label class="f">Tempat, bulan tahun<input data-s="tempat"></label>
+      <label class="f">Nama sekolah<input data-s="sekolah"></label>
+      <label class="f">Kepala sekolah<input data-s="kepsek"></label>
+      <label class="f">NIP kepala sekolah<input data-s="nipKepsek"></label>
+      <label class="f">Wali kelas<input data-s="wali"></label>
+      <label class="f">NIP wali kelas<input data-s="nipWali"></label>
+    </details></div>
+  </aside>
+  <main class="main">
+    <div class="tabs"><button data-v="siswa" class="on">🧾 Lembar Siswa</button><button data-v="mapel">📚 Input per Mapel</button><button data-v="rekap">📊 Rekap Kelas</button></div>
+    <div id="vSiswa">
+    <div id="siswaBody">
+    <div class="bar">
+      <button id="prev">‹ Sebelumnya</button><button id="next">Berikutnya ›</button>
+      <span class="muted" id="pos"></span><span class="sp"></span>
+      <label class="muted">Template <select id="tCur"><option value="X">Kelas X (12 mapel)</option><option value="XI">Kelas XI (11 mapel)</option></select></label>
+    </div>
+    <div class="tiles">
+      <div class="tile"><small>Nilai terisi</small><b id="tFill">0 / 0</b><div class="meter"><i id="tFillBar"></i></div></div>
+      <div class="tile t2"><small>Jumlah · Rata-rata</small><div class="two"><b id="tSum">–</b><b id="tAvg" style="color:var(--muted)">–</b></div></div>
+      <div class="tile t3"><small>Tuntas</small><b id="tOk" style="color:var(--ok)">0</b></div>
+      <div class="tile t4"><small>Tidak tuntas</small><b id="tNo" style="color:var(--danger)">0</b></div>
+    </div>
+    <div class="ws">
+      <div class="scroll"><div class="paper" id="paper"></div></div>
+      <aside class="aside">
+        <div class="card"><h2><span class="ic">🏫</span>Progres kelas</h2>
+          <div class="bigp"><b id="cpText">0 dari 0 siswa</b></div><div class="meter"><i id="cpBar"></i></div><div class="muted" id="cpSub" style="margin-top:6px"></div></div>
+        <div class="card tips"><h2><span class="ic">💡</span>Tips cepat</h2>
+          <ul><li>Tekan <kbd>Enter</kbd> di kolom nilai untuk pindah ke mapel berikutnya. Setelah nilai terakhir, <kbd>Enter</kbd> lanjut ke siswa berikutnya.</li>
+          <li>KKTP diisi sekali, berlaku untuk semua siswa pada tingkat yang sama.</li>
+          <li>Kolom <b>Ket</b> terisi sendiri: TUNTAS atau TIDAK TUNTAS.</li>
+          <li>Kotak <b style="color:var(--danger)">merah</b> berarti isian bukan angka 0–100.</li></ul></div>
+        <div class="card"><h2><span class="ic">🛟</span>Cadangan</h2><div class="bk warn" id="bkNote"></div></div>
+      </aside>
+    </div>
+    </div>
+    <div id="emptyState" class="empty" hidden>
+      <div class="empty-ic">📒</div>
+      <h3>Belum ada data siswa</h3>
+      <p>Mulai dengan menambahkan siswa. Pilih dulu <b>tingkat</b> dan <b>nama kelas</b> di menu kiri, misalnya Kelas X dan <b>X RPL</b>.</p>
+      <div class="empty-act">
+        <button class="p" id="eAdd">+ Tambah siswa satu per satu</button>
+        <button id="eBulk">📋 Tempel banyak nama</button>
+        <button id="eImp">📥 Impor dari Excel / CSV</button>
+        <button id="eRs">♻️ Pulihkan dari cadangan</button>
+      </div>
+      <ol class="empty-steps"><li><b>1</b><span>Tambah siswa</span></li><li><b>2</b><span>Isi KKTP tiap mapel</span></li><li><b>3</b><span>Isi nilai</span></li><li><b>4</b><span>Unduh Excel / Word / PDF</span></li></ol>
+    </div>
+  </div>
+    <div id="vMapel" hidden>
+      <div class="bar">
+        <label class="muted">Tingkat <select id="mT"><option value="X">Kelas X</option><option value="XI">Kelas XI</option></select></label>
+        <label class="muted">Kelas <select id="mK"></select></label>
+      </div>
+      <div class="bar"><button id="mPrev">‹ Mapel</button><select id="mM" style="flex:1;min-width:220px"></select><button id="mNext">Mapel ›</button></div>
+      <div class="bar"><label class="muted">KKTP mapel ini <input id="mKktp" inputmode="decimal" style="width:90px"></label><span class="muted" id="mProg"></span></div>
+      <div class="scroll"><div class="card"><div id="mTable"></div></div></div>
+      <details class="card" style="margin-top:10px"><summary>Atur KKTP semua mapel (sekali isi)</summary><div id="mKK"></div></details>
+      <p class="hint">Pilih satu mata pelajaran, isi KKTP-nya, lalu input nilai seluruh siswa dari atas ke bawah (Enter pindah ke siswa berikutnya). Keterangan TUNTAS / TIDAK TUNTAS terisi otomatis: TUNTAS bila nilai sama dengan atau di atas KKTP. KKTP berlaku untuk semua siswa pada tingkat yang sama.</p>
+    </div>
+    <div id="vRekap" hidden>
+      <div class="bar">
+        <label class="muted">Tingkat <select id="rT"><option value="X">Kelas X</option><option value="XI">Kelas XI</option></select></label>
+        <label class="muted">Kelas <select id="rK"></select></label>
+        <label class="muted"><input type="checkbox" id="rKet" checked> Keterangan otomatis</label>
+        <span class="sp"></span><button class="xl" data-rx="xlsx">Excel</button><button class="dc" data-rx="docx">Word</button><button class="pf" data-rx="pdf">PDF</button>
+      </div>
+      <div class="stat" id="rStat"></div>
+      <div class="scroll"><div class="paper wide rk" id="rTable"></div></div>
+      <p class="hint">Rekap adalah template terpisah dari lembar siswa: satu tabel berisi semua siswa dalam satu kelas. Nilai di bawah KKTP berwarna merah. Keterangan: TUNTAS bila semua nilai terisi dan tidak ada yang di bawah KKTP; TIDAK TUNTAS bila ada nilai di bawah KKTP; Belum lengkap bila ada nilai kosong. Unduhan rekap berformat landscape.</p>
+    </div>
+  </main>
+</div>
+<script src="libs/jszip.min.js"></script>
+<script src="libs/exceljs.min.js"></script>
+<script src="libs/docx.umd.js"></script>
+<script src="libs/jspdf.umd.min.js"></script>
+<script src="libs/jspdf.plugin.autotable.min.js"></script>
+<script src="export.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
