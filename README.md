@@ -5,7 +5,7 @@
 **Isi nilai sekali, unduh sebagai Excel, Word, atau PDF.**
 Bentuk lembarnya sama seperti buku nilai sekolah. Tidak perlu paham komputer.
 
-[![Buka Aplikasi](https://img.shields.io/badge/🚀_Buka_Aplikasi-2457d6?style=for-the-badge)](https://rehzaherza.github.io/Aplikasi-Daftar-Nilai-UTS/)
+[![Buka Aplikasi](https://img.shields.io/badge/🚀_Buka_Aplikasi-2457d6?style=for-the-badge)](https://rehzaherza.github.io/Input-Nilai-UTS/)
 [![Panduan Visual](https://img.shields.io/badge/📖_Panduan_Visual-17803d?style=for-the-badge)](https://rehzaherza.github.io/Aplikasi-Daftar-Nilai-UTS/panduan-aplikasi-daftar-nilai-uts.html)
 
 ![Tanpa instalasi](https://img.shields.io/badge/tanpa-instalasi-blue)
@@ -37,7 +37,7 @@ flowchart LR
 |---|---|
 | 💻 **Perangkat** | Laptop/komputer paling nyaman. HP juga bisa |
 | 🌐 **Peramban** | **Google Chrome** atau **Microsoft Edge** |
-| 🔗 **Alamat web** | https://rehzaherza.github.io/Aplikasi-Daftar-Nilai-UTS/ |
+| 🔗 **Alamat web** | https://rehzaherza.github.io/Input-Nilai-UTS/ |
 
 > [!IMPORTANT]
 > **Data tersimpan di perangkat yang sedang dipakai, bukan di internet.**
